@@ -1,0 +1,20 @@
+library(dplyr)
+
+# Read CSV 
+tracks <- read.csv("../data/all_tracks.csv", stringsAsFactors = FALSE)
+
+top_albums <- tracks %>%
+  group_by(artist..text, album..text) %>%
+  summarise(play_count = n(), .groups = "drop") %>%
+  arrange(desc(play_count)) %>%
+  head(100) %>% # top 100 albums
+  rename(
+    Artist = artist..text,
+    Album = album..text,
+    "Play Count" = play_count
+  )
+
+# Print in a table
+print(top_albums)
+
+View(top_albums)

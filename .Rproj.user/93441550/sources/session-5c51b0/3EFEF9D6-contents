@@ -1,0 +1,20 @@
+url <- paste0(
+"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=",
+user, "&api_key=", api_key, "&format=json&limit=5"
+)
+url
+print(api_url)
+user <- "tvarn"
+api_key <- "9a79c08e6161f504681828923a16f3c0"
+api_url <- paste0(
+"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=",
+user, "&api_key=", api_key, "&format=json&limit=5"
+)
+print(api_url)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)
+source("~/.active-rstudio-document", echo = TRUE)

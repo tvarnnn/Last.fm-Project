@@ -1,0 +1,40 @@
+library(dplyr)
+library(ggplot2)
+
+listening_trends <- function(csv_file = "data/all_tracks.csv") {
+  # Read CSV
+  tracks <- read.csv(csv_file, stringsAsFactors = FALSE)
+  
+  # Ensure timestamps are numeric
+  tracks$date.uts <- as.numeric(tracks$date.uts)
+  
+  # Extract hour of the day
+  tracks <- tracks %>%
+    mutate(hour = as.numeric(format(as.POSIXct(date.uts, origin = "1970-01-01", tz = "UTC"), "%H"))) %>%
+    filter(!is.na(hour))  # Remove NA hours
+  
+  # Summarize plays by hour
+  hourly_stats <- tracks %>%
+    group_by(hour) %>%
+    summarise(total_scrobbles = n())
+  
+  # Plot radial chart
+  p <- ggplot(hourly_stats, aes(x = factor(hour), y = total_scrobbles)) +
+    geom_bar(stat = "identity", fill = "red") +
+    coord_polar(start = -pi/2) +  # Rotate so hour 0 is at top
+    scale_x_discrete(labels = 0:23) +  # Show hour labels around the clock
+    labs(title = "Music Listening by Hour of the Day", x = "", y = "") +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      axis.text.y = element_blank(),      # Remove radial numbers
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5)
+    )
+  
+  print(p)
+}
+
+# Call the function
+listening_trends()

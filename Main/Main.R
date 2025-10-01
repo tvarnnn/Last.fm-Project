@@ -3,9 +3,14 @@ library(jsonlite)
 library(dplyr)
 library(ggplot2)
 
-user <- "Not_Herro"
-api_key <- "9a79c08e6161f504681828923a16f3c0"
+user <- "YOUR LAST.FM USERNAME"
+api_key <- "YOUR LAST.FM API KEY"
 csv_file <- "../data/all_tracks.csv"
+
+# Ensure data folder exists before writing CSV. If not, create a folder
+if (!dir.exists("../data")) {
+  dir.create("../data")
+}
 
 limit <- 1000
 page <- 1
@@ -21,10 +26,10 @@ repeat {
   content <- fromJSON(content(response, "text"), flatten = TRUE)
   tracks <- content$recenttracks$track
   
-  # Flatten any list-columns that are still lists
+  # Flatten any list columns that are still lists
   tracks_df <- as.data.frame(tracks, stringsAsFactors = FALSE)
   
-  # Convert list-columns to character
+  # Convert list columns to character
   for (col in names(tracks_df)) {
     if (is.list(tracks_df[[col]])) {
       tracks_df[[col]] <- sapply(tracks_df[[col]], function(x) {
@@ -46,9 +51,9 @@ repeat {
   page <- page + 1
 }
 
-# Optional: read CSV to view all data
+
 all_tracks <- read.csv(csv_file, stringsAsFactors = FALSE)
-View(all_tracks)
+
 
 # Source analysis files
 source("../Scripts/Lastfm_Yearly.R")
@@ -59,9 +64,7 @@ source("../Scripts/Lastfm_TopAlbums.R")
 source("../Scripts/Lastfm_ListeningTrends.R")
 source("../Scripts/Lastfm_VisualizingYearlyData.R")
 
-
 # Run analysis files
-
 yearly_stats(all_tracks)
 monthly_stats(all_tracks)
 top_artists(all_tracks)

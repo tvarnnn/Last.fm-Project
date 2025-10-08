@@ -18,12 +18,21 @@ ui <- dashboardPage(
   dashboardHeader(title = "Last.fm Analysis"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Home", tabName = "home", icon = icon("home"))
+      menuItem("Home", tabName = "home", icon = icon("home")),
+      menuItem("Artists", tabName = "Artists", icon = icon("user")),
+      menuItem("Albums", tabName = "Albums", icon = icon("compact-disc")),
+      menuItem("Tracks", tabName = "Tracks", icon = icon("music"))
     )
   ),
   dashboardBody(
     tabItems(
-      tabItem(tabName = "home", homeUI("home1"))
+      tabItem(tabName = "home", homeUI("home1")),
+      
+      tabItem(tabName = "Artists", h2("Artist data coming soon!")),
+      
+      tabItem(tabName = "Albums", h2("Album data coming soon!")),
+      
+      tabItem(tabName = "Tracks", h2("Track data coming soon!"))
     )
   )
 )

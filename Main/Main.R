@@ -6,8 +6,8 @@ library(ggplot2)
 library(here)
 
 # User config
-user <- "ADD LASTFM USERNAME HERE"
-api_key <- "ADD API KEY HERE"
+user <- "LASTFM USERNAME"
+api_key <- "LASTFM API KEY"
 csv_file <- here("data", "all_tracks.csv")
 
 # Ensure data folder exists

@@ -20,4 +20,4 @@ top_tracks <- head(track_counts, 100)
 # Print in a table
 print(top_tracks)
 
-View(top_tracks)
+

@@ -3,13 +3,14 @@ library(dplyr)
 # Read CSV 
 tracks <- read.csv("../data/all_tracks.csv", stringsAsFactors = FALSE)
 
-# Count tracks
+# Count tracks grouped by track + artist
 track_counts <- tracks %>%
-  group_by(name) %>%
-  summarize(total_scrobbles = n()) %>%
+  group_by(name, artist..text) %>%
+  summarize(total_scrobbles = n(), .groups = "drop") %>%
   arrange(desc(total_scrobbles)) %>%
   rename(
     Track = name,
+    Artist = artist..text,
     "Play count" = total_scrobbles
   )
 

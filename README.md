@@ -1,84 +1,62 @@
-Last.fm Listening Analysis
-Overview
+# Last.fm Listening Analysis
 
-This project analyzes my personal Last.fm listening history using the Last.fm API. It pulls track data, organizes it, and generates insights about my music listening habits over time. The analysis includes yearly and monthly trends, top artists, top tracks, top albums, and listening activity by hour of the day.
+A personal Shiny dashboard that pulls your Last.fm scrobble history and lets you explore your music listening habits interactively.
 
-Features
+## Features
 
-Yearly Stats: Total tracks listened per year.
+- **Home** — total scrobbles, top artist, listening hours, current & longest listening streaks, top 5 artist cards, listening clock (dead zones vs peak hours visualized), and top 15 tracks
+- **Artists** — pie chart of top 5 artists, full ranked table, and artist discovery timeline showing when you first scrobbled each artist
+- **Albums** — full ranked table of top albums
+- **Tracks** — full ranked table of top tracks
+- **History** — pick a year to see the monthly scrobble chart, click any bar to drill into that month's top artists, albums, and tracks
 
-Monthly Stats: Total tracks listened per month, displayed in separate yearly plots.
+## Project Structure
 
-Top Artists: Pie chart of the top 5 artists with a “Misc” category for all others.
+```
+Last.fm-Project/
+├── app.R             # Shiny dashboard entry point
+├── fetch_data.R      # Standalone script to fetch & run analysis from console
+├── R/
+│   ├── analysis.R    # All analysis functions
+│   ├── home_module.R # Home tab UI + server
+│   └── tabs_module.R # Artists, Albums, Tracks, History tab UI + server
+├── data/
+│   └── all_tracks.csv  # Generated on first run — gitignored
+├── .Renviron           # API credentials — gitignored
+└── Last.fm Tracking.Rproj
+```
 
-Top Tracks: Table of the top 100 tracks and their play counts.
+## Setup
 
-Top Albums: Table of the top albums based on number of plays.
-
-Listening Trends: Circular bar chart showing listening activity by hour of the day.
-
-Visualizations: Includes bar charts and pie charts to help understand trends at a glance.
-
-Project Structure
-Last.fm-Analysis/
-│
-│- Main/
-│  │- main.R                 # Main script to run all analysis
-│  
-│
-│- Scripts/
-│  │- Lastfm_Yearly.R
-│  │- Lastfm_Monthly.R
-│  │- Lastfm_TopArtists.R
-│  │- Lastfm_TopTracks.R
-│  │- Lastfm_TopAlbums.R
-│  │- Lastfm_ListeningTrends.R
-│  │- Lastfm_VisualizingYearlyData.R
-│
-|
-|
-│- data/
-│     │-all_tracks.csv      # CSV file containing track history
-|
-|
-|
-│- Misc/
-   │- .gitignore
-   │- .RData
-   │- .Rhistory
-
-Setup & Usage
-
-Clone the repository:
-
+**1. Clone the repo and open the project**
+```
 git clone https://github.com/tvarnnn/Last.fm-Analysis.git
-cd Last.fm-Analysis/Main
+```
+Open `Last.fm Tracking.Rproj` in RStudio.
 
+**2. Install dependencies**
+```r
+install.packages(c("shiny", "shinydashboard", "httr", "jsonlite", "dplyr",
+                   "ggplot2", "stringr", "here", "DT", "plotly"))
+```
 
-Install required R packages
+**3. Add your credentials**
 
-install.packages(c("httr", "jsonlite", "dplyr", "ggplot2", "readr"))
+Create a `.Renviron` file at the project root:
+```
+LASTFM_USER=your_username
+LASTFM_API_KEY=your_api_key
+```
+Get a free API key at [last.fm/api](https://www.last.fm/api). Restart R after saving.
 
+**4. Run the app**
 
-Set your Last.fm username and API key in main.R:
+Open `app.R` and click **Run App**. On first launch it will automatically fetch your full scrobble history and save it to `data/all_tracks.csv`. Subsequent launches load straight from the CSV.
 
-user <- "YOUR_LASTFM_USERNAME"
-api_key <- "YOUR_LASTFM_API_KEY"
+To refresh your data with new scrobbles, click the **Refresh Data** button in the sidebar.
 
+## Notes
 
-Run the analysis:
-
-source("main.R")
-
-
-This will fetch data (or read existing CSV), run all analysis scripts, and generate plots and tables.
-
-Notes
-
-The project is modular: each analysis is in a separate script.
-
-The folder structure keeps scripts, data, and miscellaneous files organized.
-
-The visualizations are designed to be easy to read and interpretable at a glance.
-
-Future improvements may include a front-end dashboard for interactive viewing.
+- Built for personal use with a single Last.fm account
+- Data is fetched once and cached locally — no repeated API calls
+- `.Renviron` and `data/` are both gitignored so credentials and personal data never get committed

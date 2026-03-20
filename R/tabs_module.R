@@ -21,6 +21,13 @@ artistsUI <- function(id) {
         solidHeader = TRUE, status = "primary",
         DT::dataTableOutput(ns("artists_table"))
       )
+    ),
+    fluidRow(
+      box(
+        title = "Artist Discovery Timeline", width = 12,
+        solidHeader = TRUE, status = "primary",
+        DT::dataTableOutput(ns("discovery_table"))
+      )
     )
   )
 }
@@ -50,6 +57,20 @@ artistsServer <- function(id, all_tracks) {
 
     output$artists_table <- DT::renderDataTable({
       DT::datatable(artists_data, options = list(pageLength = 10), rownames = FALSE)
+    })
+
+    output$discovery_table <- DT::renderDataTable({
+      data <- all_tracks %>%
+        group_by(`artist..text`) %>%
+        summarise(
+          Discovered = as.Date(min(play_date)),
+          Plays = n(),
+          .groups = "drop"
+        ) %>%
+        arrange(desc(Discovered)) %>%
+        rename(Artist = `artist..text`)
+
+      DT::datatable(data, options = list(pageLength = 10), rownames = FALSE)
     })
 
   })

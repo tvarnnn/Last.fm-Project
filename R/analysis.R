@@ -99,14 +99,19 @@ listening_trends <- function(tracks) {
     mutate(hour = as.numeric(format(as.POSIXct(date.uts, origin = "1970-01-01", tz = "UTC"), "%H"))) %>%
     filter(!is.na(hour))
 
-  hourly_stats <- tracks %>%
-    group_by(hour) %>%
-    summarise(total_scrobbles = n(), .groups = "drop")
+  # Fill all 24 hours so dead zones show as flat bars rather than gaps
+  hourly_stats <- data.frame(hour = 0:23) %>%
+    left_join(
+      tracks %>% group_by(hour) %>% summarise(total_scrobbles = n(), .groups = "drop"),
+      by = "hour"
+    ) %>%
+    mutate(total_scrobbles = ifelse(is.na(total_scrobbles), 0, total_scrobbles))
 
-  p <- ggplot(hourly_stats, aes(x = factor(hour), y = total_scrobbles)) +
-    geom_bar(stat = "identity", fill = "red") +
+  p <- ggplot(hourly_stats, aes(x = factor(hour), y = total_scrobbles, fill = total_scrobbles)) +
+    geom_bar(stat = "identity") +
     coord_polar(start = -pi/2) +
     scale_x_discrete(labels = 0:23) +
+    scale_fill_gradient(low = "#1a1a2e", high = "#e74c3c") +
     labs(title = "Music Listening by Hour of the Day", x = "", y = "") +
     theme_minimal() +
     theme(
@@ -114,11 +119,53 @@ listening_trends <- function(tracks) {
       axis.text.y = element_blank(),
       panel.grid.major.y = element_blank(),
       panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5)
+      plot.title = element_text(hjust = 0.5),
+      legend.position = "none"
     )
 
   print(p)
   invisible(p)
+}
+
+streak_stats <- function(tracks) {
+  dates <- tracks %>%
+    mutate(date = as.Date(play_date)) %>%
+    distinct(date) %>%
+    arrange(date) %>%
+    pull(date)
+
+  if (length(dates) == 0) return(list(current_streak = 0, longest_streak = 0))
+
+  # Longest streak
+  max_streak <- 1
+  current_run <- 1
+  for (i in seq(2, length(dates))) {
+    if (as.numeric(dates[i] - dates[i - 1]) == 1) {
+      current_run <- current_run + 1
+      if (current_run > max_streak) max_streak <- current_run
+    } else {
+      current_run <- 1
+    }
+  }
+
+  # Current streak — check from today, fall back to yesterday
+  # (in case you haven't scrobbled yet today)
+  today <- Sys.Date()
+  streak <- 0
+  check <- today
+  while (check %in% dates) {
+    streak <- streak + 1
+    check <- check - 1
+  }
+  if (streak == 0) {
+    check <- today - 1
+    while (check %in% dates) {
+      streak <- streak + 1
+      check <- check - 1
+    }
+  }
+
+  list(current_streak = streak, longest_streak = max_streak)
 }
 
 visualize_yearly <- function(tracks) {

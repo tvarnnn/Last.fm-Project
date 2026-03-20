@@ -12,6 +12,11 @@ homeUI <- function(id) {
       valueBoxOutput(ns("listening_hours"))
     ),
 
+    fluidRow(
+      valueBoxOutput(ns("current_streak")),
+      valueBoxOutput(ns("longest_streak"))
+    ),
+
     br(),
 
     h3("Your Top 5 Artists"),
@@ -39,6 +44,7 @@ homeServer <- function(id, top15_tracks, all_tracks) {
   moduleServer(id, function(input, output, session) {
 
     homeData <- getHomeData(all_tracks)
+    streaks  <- streak_stats(all_tracks)
 
     output$total_tracks <- renderValueBox({
       valueBox(homeData$totalTracks, "Total Tracks", icon = icon("music"), color = "blue")
@@ -50,6 +56,14 @@ homeServer <- function(id, top15_tracks, all_tracks) {
 
     output$listening_hours <- renderValueBox({
       valueBox(homeData$listeningHours, "Listening Hours", icon = icon("clock"), color = "blue")
+    })
+
+    output$current_streak <- renderValueBox({
+      valueBox(paste(streaks$current_streak, "days"), "Current Streak", icon = icon("fire"), color = "orange")
+    })
+
+    output$longest_streak <- renderValueBox({
+      valueBox(paste(streaks$longest_streak, "days"), "Longest Streak", icon = icon("trophy"), color = "yellow")
     })
 
     output$top_artists <- renderUI({
